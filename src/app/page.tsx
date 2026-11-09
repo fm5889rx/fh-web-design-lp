@@ -1,11 +1,25 @@
 import Image from "next/image";
+import type { ReactNode } from "react";
 import { ContactForm } from "./_components/ContactForm";
+import { RecordPdfPreview } from "./_components/RecordPdfPreview";
 import { RecordSheetPreview } from "./_components/RecordSheetPreview";
+
+type Feature = {
+  icon: string;
+  title: string;
+  description: string;
+  /** アイコンのホバー／フォーカス／タップで表示する縮小イメージ */
+  preview?: ReactNode;
+  previewLabel?: string;
+  /** カードが画面右端にあるとき、プレビューを右揃えで開く */
+  previewAlign?: "left" | "right";
+};
 
 const FEATURES = [
   {
     icon: "🗓️",
-    hasSheetPreview: true,
+    preview: <RecordSheetPreview />,
+    previewLabel: "生活記録表のイメージを表示",
     title: "リワークの指定フォーマットを完全再現",
     description:
       "24時間の時間軸に、気分と疲労感のグラフをそのまま記録できます。",
@@ -18,11 +32,14 @@ const FEATURES = [
   },
   {
     icon: "📄",
+    preview: <RecordPdfPreview />,
+    previewLabel: "生成されるPDFのイメージを表示",
+    previewAlign: "right",
     title: "1クリックで、医師へそのまま手渡し",
     description:
       "A4横向き1枚のPDFを自動生成。診察前のコピーの手間はもう要りません。",
   },
-] as const;
+] satisfies Feature[];
 
 function IconBadge({ icon }: { icon: string }) {
   return (
@@ -87,22 +104,31 @@ export default function Home() {
           </h2>
           <ul className="mt-10 grid gap-6 md:grid-cols-3">
             {FEATURES.map((feature) => {
-              const { icon, title, description } = feature;
+              const {
+                icon,
+                title,
+                description,
+                preview,
+                previewLabel,
+                previewAlign,
+              } = feature;
               return (
                 <li
                   key={title}
                   className="rounded-3xl bg-white p-8 shadow-[0_8px_30px_-12px_rgba(62,122,82,0.35)] ring-1 ring-[#A8DAB5]/60"
                 >
-                  {"hasSheetPreview" in feature ? (
-                    // ホバー／キーボードフォーカス／タップで生活記録表の縮小イメージを表示
+                  {preview ? (
+                    // ホバー／キーボードフォーカス／タップで縮小イメージを表示
                     <div
                       tabIndex={0}
-                      aria-label={`${title}：生活記録表のイメージを表示`}
+                      aria-label={`${title}：${previewLabel}`}
                       className="group relative w-fit cursor-help rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-[#3E7A52]"
                     >
                       <IconBadge icon={icon} />
-                      <div className="pointer-events-none invisible absolute left-0 top-full z-10 mt-3 translate-y-1 opacity-0 transition duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus:visible group-focus:translate-y-0 group-focus:opacity-100">
-                        <RecordSheetPreview />
+                      <div
+                        className={`pointer-events-none invisible absolute top-full z-10 mt-3 translate-y-1 opacity-0 transition duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus:visible group-focus:translate-y-0 group-focus:opacity-100 ${previewAlign === "right" ? "right-0" : "left-0"}`}
+                      >
+                        {preview}
                       </div>
                     </div>
                   ) : (
