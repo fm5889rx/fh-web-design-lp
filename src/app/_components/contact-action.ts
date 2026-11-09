@@ -1,5 +1,7 @@
 "use server";
 
+import { getCloudflareContext } from "@opennextjs/cloudflare";
+
 export type ContactState = {
   status: "idle" | "success" | "error";
   message: string;
@@ -10,6 +12,17 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const escapeHtml = (value: string) =>
   value.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+
+/** Cloudflare の環境変数・シークレットを優先し、無ければ process.env（ローカル開発）を読む。 */
+function getEnv(name: string): string | undefined {
+  try {
+    const value = (getCloudflareContext().env as Record<string, unknown>)[name];
+    if (typeof value === "string" && value) return value;
+  } catch {
+    // Cloudflare 実行環境外（next dev など）
+  }
+  return process.env[name];
+}
 
 const field = (formData: FormData, key: string) =>
   String(formData.get(key) ?? "").trim();
@@ -44,7 +57,7 @@ export async function sendContact(
     return fail("メールアドレスの形式をご確認ください。");
   }
 
-  const apiKey = process.env.RESEND_API_KEY;
+  const apiKey = getEnv("RESEND_API_KEY");
   if (!apiKey) {
     console.error("RESEND_API_KEY is not set");
     return fail(
@@ -59,9 +72,8 @@ export async function sendContact(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from:
-        process.env.CONTACT_FROM ?? "FH WEB DESIGN <info@fh-web-design.com>",
-      to: [process.env.CONTACT_TO ?? "info@fh-web-design.com"],
+      from: getEnv("CONTACT_FROM") ?? "FH WEB DESIGN <info@fh-web-design.com>",
+      to: [getEnv("CONTACT_TO") ?? "info@fh-web-design.com"],
       reply_to: email,
       subject: `【お問い合わせ】${name} 様`,
       html: `<p><b>お名前:</b> ${escapeHtml(name)}</p><p><b>メール:</b> ${escapeHtml(email)}</p><p><b>内容:</b></p><p style="white-space:pre-wrap">${escapeHtml(message)}</p>`,
