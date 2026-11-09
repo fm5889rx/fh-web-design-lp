@@ -24,12 +24,39 @@ function getEnv(name: string): string | undefined {
   return process.env[name];
 }
 
+const FROM_DEFAULT = "FH WEB DESIGN <info@fh-web-design.com>";
+const INBOX_DEFAULT = "info@fh-web-design.com";
+
+type Mail = {
+  from: string;
+  to: string[];
+  reply_to: string;
+  subject: string;
+  html: string;
+};
+
+/** Resend でメールを1通送る。成功したら true。 */
+async function sendMail(apiKey: string, mail: Mail): Promise<boolean> {
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(mail),
+  });
+  if (!response.ok) {
+    console.error("Resend error", response.status, await response.text());
+  }
+  return response.ok;
+}
+
 const field = (formData: FormData, key: string) =>
   String(formData.get(key) ?? "").trim();
 
 const fail = (message: string): ContactState => ({ status: "error", message });
 
-/** お問い合わせを Resend 経由で info@ 宛てにメール送信する。 */
+/** お問い合わせを Resend 経由で事務所に通知し、送信者に自動返信する。 */
 export async function sendContact(
   _prev: ContactState,
   formData: FormData,
@@ -65,25 +92,35 @@ export async function sendContact(
     );
   }
 
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: getEnv("CONTACT_FROM") ?? "FH WEB DESIGN <info@fh-web-design.com>",
-      to: [getEnv("CONTACT_TO") ?? "info@fh-web-design.com"],
-      reply_to: email,
-      subject: `【お問い合わせ】${name} 様`,
-      html: `<p><b>お名前:</b> ${escapeHtml(name)}</p><p><b>メール:</b> ${escapeHtml(email)}</p><p><b>内容:</b></p><p style="white-space:pre-wrap">${escapeHtml(message)}</p>`,
-    }),
-  });
+  const from = getEnv("CONTACT_FROM") ?? FROM_DEFAULT;
+  const inbox = getEnv("CONTACT_TO") ?? INBOX_DEFAULT;
 
-  if (!response.ok) {
-    console.error("Resend error", response.status, await response.text());
+  // 1) 事務所宛ての通知（これが失敗したら全体を失敗扱いにする）
+  const notified = await sendMail(apiKey, {
+    from,
+    to: [inbox],
+    reply_to: email,
+    subject: `【お問い合わせ】${name} 様`,
+    html: `<p><b>お名前:</b> ${escapeHtml(name)}</p><p><b>メール:</b> ${escapeHtml(email)}</p><p><b>内容:</b></p><p style="white-space:pre-wrap">${escapeHtml(message)}</p>`,
+  });
+  if (!notified) {
     return fail("送信に失敗しました。時間をおいて再度お試しください。");
   }
+
+  // 2) 入力されたアドレス宛ての自動返信（失敗しても受付自体は成功扱い）
+  await sendMail(apiKey, {
+    from,
+    to: [email],
+    reply_to: inbox,
+    subject: "【FH WEB DESIGN】お問い合わせを受け付けました",
+    html: `<p>${escapeHtml(name)} 様</p>
+<p>この度はお問い合わせいただき、ありがとうございます。<br>以下の内容で受け付けいたしました。内容を確認のうえ、改めてご連絡いたします。</p>
+<hr>
+<p style="white-space:pre-wrap">${escapeHtml(message)}</p>
+<hr>
+<p style="font-size:12px;color:#666">※このメールは自動送信です。心当たりのない場合は、お手数ですが破棄してください。<br>FH WEB DESIGN / ${INBOX_DEFAULT}</p>`,
+  });
+
   return {
     status: "success",
     message:
