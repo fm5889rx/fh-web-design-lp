@@ -1,0 +1,80 @@
+"use server";
+
+export type ContactState = {
+  status: "idle" | "success" | "error";
+  message: string;
+};
+
+const MAX_LENGTH = { name: 100, email: 200, message: 5000 } as const;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const escapeHtml = (value: string) =>
+  value.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+
+const field = (formData: FormData, key: string) =>
+  String(formData.get(key) ?? "").trim();
+
+const fail = (message: string): ContactState => ({ status: "error", message });
+
+/** お問い合わせを Resend 経由で info@ 宛てにメール送信する。 */
+export async function sendContact(
+  _prev: ContactState,
+  formData: FormData,
+): Promise<ContactState> {
+  // ハニーポット：ボットだけが埋める隠し項目。成功を装って破棄する。
+  if (field(formData, "website")) {
+    return { status: "success", message: "送信しました。" };
+  }
+
+  const name = field(formData, "name");
+  const email = field(formData, "email");
+  const message = field(formData, "message");
+
+  if (!name || !email || !message) {
+    return fail("お名前・メールアドレス・お問い合わせ内容をご入力ください。");
+  }
+  if (
+    name.length > MAX_LENGTH.name ||
+    email.length > MAX_LENGTH.email ||
+    message.length > MAX_LENGTH.message
+  ) {
+    return fail("入力内容が長すぎます。");
+  }
+  if (!EMAIL_PATTERN.test(email)) {
+    return fail("メールアドレスの形式をご確認ください。");
+  }
+
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.error("RESEND_API_KEY is not set");
+    return fail(
+      "現在フォームをご利用いただけません。info@fh-web-design.com まで直接ご連絡ください。",
+    );
+  }
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from:
+        process.env.CONTACT_FROM ?? "FH WEB DESIGN <info@fh-web-design.com>",
+      to: [process.env.CONTACT_TO ?? "info@fh-web-design.com"],
+      reply_to: email,
+      subject: `【お問い合わせ】${name} 様`,
+      html: `<p><b>お名前:</b> ${escapeHtml(name)}</p><p><b>メール:</b> ${escapeHtml(email)}</p><p><b>内容:</b></p><p style="white-space:pre-wrap">${escapeHtml(message)}</p>`,
+    }),
+  });
+
+  if (!response.ok) {
+    console.error("Resend error", response.status, await response.text());
+    return fail("送信に失敗しました。時間をおいて再度お試しください。");
+  }
+  return {
+    status: "success",
+    message:
+      "お問い合わせを受け付けました。内容を確認のうえ、ご連絡いたします。",
+  };
+}

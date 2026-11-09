@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { ContactForm } from "./_components/ContactForm";
 import { RecordSheetPreview } from "./_components/RecordSheetPreview";
 
 const FEATURES = [
@@ -133,6 +134,31 @@ export default function Home() {
           <p className="mx-auto mt-6 max-w-3xl text-pretty text-sm leading-loose text-[#2F3437]/85 sm:text-base">
             当事務所は、Webデザインからフロントエンド・バックエンドの実装、安全なインフラ構築までをワンストップで対応するフルスタック開発を行っています。最先端のAI技術を開発プロセスに組み込むことで、圧倒的な短納期と高い品質を両立します。
           </p>
+        </section>
+
+        {/* Contact */}
+        <section
+          id="contact"
+          aria-labelledby="contact-heading"
+          className="mx-auto mb-20 max-w-xl"
+        >
+          <h2
+            id="contact-heading"
+            className="text-center text-xl font-semibold tracking-wide sm:text-2xl"
+          >
+            お問い合わせ
+          </h2>
+          <p className="mt-4 mb-8 text-center text-sm leading-loose text-[#2F3437]/75">
+            ご相談・ご依頼はこちらから。{" "}
+            <a
+              href="mailto:info@fh-web-design.com"
+              className="font-medium text-[#3E7A52] underline underline-offset-4"
+            >
+              info@fh-web-design.com
+            </a>{" "}
+            へ直接メールでも承ります。
+          </p>
+          <ContactForm />
         </section>
       </main>
 
