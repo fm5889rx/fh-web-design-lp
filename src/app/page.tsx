@@ -42,6 +42,44 @@ const FEATURES = [
   },
 ] satisfies Feature[];
 
+const COMPANY_INFO: { label: string; value: ReactNode }[] = [
+  { label: "屋号", value: "FH WEB DESIGN" },
+  { label: "代表者", value: "森　太" },
+  {
+    label: "所在地",
+    value: (
+      <>
+        〒448-0804
+        <br />
+        愛知県刈谷市半城土町北十三塚7-1 ソシア十三塚404
+      </>
+    ),
+  },
+  {
+    label: "電話番号",
+    value: (
+      <a href="tel:07089757216" className="underline underline-offset-4">
+        070-8975-7216
+      </a>
+    ),
+  },
+  {
+    label: "メール",
+    value: (
+      <a
+        href="mailto:info@fh-web-design.com"
+        className="underline underline-offset-4"
+      >
+        info@fh-web-design.com
+      </a>
+    ),
+  },
+  {
+    label: "事業内容",
+    value: "Webデザイン・システム開発・インフラ構築、Webアプリの企画開発",
+  },
+];
+
 function IconBadge({ icon }: { icon: string }) {
   return (
     <span
@@ -162,6 +200,31 @@ export default function Home() {
           <p className="mx-auto mt-6 max-w-3xl text-pretty text-sm leading-loose text-[#2F3437]/85 sm:text-base">
             当事務所は、Webデザインからフロントエンド・バックエンドの実装、安全なインフラ構築までをワンストップで対応するフルスタック開発を行っています。最先端のAI技術を開発プロセスに組み込むことで、圧倒的な短納期と高い品質を両立します。
           </p>
+        </section>
+
+        {/* Company */}
+        <section
+          id="company"
+          aria-labelledby="company-heading"
+          className="mx-auto mb-16 max-w-2xl"
+        >
+          <h2
+            id="company-heading"
+            className="text-center text-xl font-semibold tracking-wide sm:text-2xl"
+          >
+            事務所概要
+          </h2>
+          <dl className="mt-8 divide-y divide-[#A8DAB5]/60 rounded-3xl bg-white px-6 py-2 text-sm shadow-[0_8px_30px_-12px_rgba(62,122,82,0.35)] ring-1 ring-[#A8DAB5]/60 sm:px-8">
+            {COMPANY_INFO.map(({ label, value }) => (
+              <div
+                key={label}
+                className="grid gap-1 py-4 sm:grid-cols-[7rem_1fr] sm:gap-4"
+              >
+                <dt className="font-medium text-[#3E7A52]">{label}</dt>
+                <dd className="leading-relaxed text-[#2F3437]/85">{value}</dd>
+              </div>
+            ))}
+          </dl>
         </section>
 
         {/* Contact */}
