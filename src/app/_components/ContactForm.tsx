@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { sendContact, type ContactState } from "./contact-action";
 
@@ -66,6 +67,16 @@ export function ContactForm() {
         aria-hidden
         className="hidden"
       />
+      <p className="text-xs leading-relaxed text-[#2F3437]/70">
+        送信により、
+        <Link
+          href="/privacy"
+          className="text-[#3E7A52] underline underline-offset-4"
+        >
+          プライバシーポリシー
+        </Link>
+        に同意したものとします。
+      </p>
       <p aria-live="polite" className="min-h-5 text-sm text-red-700">
         {state.status === "error" ? state.message : ""}
       </p>
