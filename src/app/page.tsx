@@ -115,18 +115,19 @@ export default function Home() {
               return (
                 <li
                   key={title}
-                  className="rounded-3xl bg-white p-8 shadow-[0_8px_30px_-12px_rgba(62,122,82,0.35)] ring-1 ring-[#A8DAB5]/60"
+                  className="relative rounded-3xl bg-white p-8 shadow-[0_8px_30px_-12px_rgba(62,122,82,0.35)] ring-1 ring-[#A8DAB5]/60"
                 >
                   {preview ? (
-                    // ホバー／キーボードフォーカス／タップで縮小イメージを表示
+                    // ホバー／キーボードフォーカス／タップで縮小イメージを表示。
+                    // スマホではカード幅いっぱい、md 以上ではアイコン基準で開く
                     <div
                       tabIndex={0}
                       aria-label={`${title}：${previewLabel}`}
-                      className="group relative w-fit cursor-help rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-[#3E7A52]"
+                      className="group w-fit cursor-help md:relative rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-[#3E7A52]"
                     >
                       <IconBadge icon={icon} />
                       <div
-                        className={`pointer-events-none invisible absolute top-full z-10 mt-3 translate-y-1 opacity-0 transition duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus:visible group-focus:translate-y-0 group-focus:opacity-100 ${previewAlign === "right" ? "right-0" : "left-0"}`}
+                        className={`pointer-events-none invisible absolute inset-x-4 top-[6rem] z-10 translate-y-1 md:inset-x-auto md:top-full md:mt-3 opacity-0 transition duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus:visible group-focus:translate-y-0 group-focus:opacity-100 ${previewAlign === "right" ? "md:right-0" : "md:left-0"}`}
                       >
                         {preview}
                       </div>
