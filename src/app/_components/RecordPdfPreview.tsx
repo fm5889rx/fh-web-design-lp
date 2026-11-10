@@ -11,7 +11,7 @@ const CHART = { x: 622, y: 344, w: 180, h: 182 } as const;
 
 export function RecordPdfPreview() {
   return (
-    <div className="w-80 rounded-2xl bg-white p-3 text-[#2F3437] shadow-xl ring-1 ring-[#A8DAB5]">
+    <div className="w-full md:w-80 rounded-2xl bg-white p-3 text-[#2F3437] shadow-xl ring-1 ring-[#A8DAB5]">
       <p className="text-[11px] font-semibold">
         自動生成されるPDF（A4横・1枚／イメージ）
       </p>

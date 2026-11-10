@@ -13,7 +13,7 @@ const FATIGUE = [30, 25, 45, 50, 65, 60, 55, 70, 60] as const;
 
 export function RecordSheetPreview() {
   return (
-    <div className="w-64 rounded-2xl bg-white p-3 text-[#2F3437] shadow-xl ring-1 ring-[#A8DAB5]">
+    <div className="w-full md:w-64 rounded-2xl bg-white p-3 text-[#2F3437] shadow-xl ring-1 ring-[#A8DAB5]">
       <p className="text-[11px] font-semibold">生活記録表（イメージ）</p>
 
       <svg
