@@ -60,7 +60,11 @@ export default function PrivacyPage() {
         <section className="mt-8">
           <h2 className="text-base font-semibold">お問い合わせ先</h2>
           <p className="mt-2 text-sm leading-loose text-[#2F3437]/80">
-            FH WEB DESIGN
+            FH WEB DESIGN（代表者：森　太）
+            <br />
+            〒448-0804 愛知県刈谷市半城土町北十三塚7-1 ソシア十三塚404
+            <br />
+            電話：070-8975-7216
             <br />
             <a
               href="mailto:info@fh-web-design.com"
