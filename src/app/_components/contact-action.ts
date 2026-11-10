@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 export type ContactState = {
@@ -51,6 +52,29 @@ async function sendMail(apiKey: string, mail: Mail): Promise<boolean> {
   return response.ok;
 }
 
+type Limiter = {
+  limit(options: { key: string }): Promise<{ success: boolean }>;
+};
+
+/** 同一IP・同一宛先メールアドレスからの連続送信を制限する。制限基盤が使えない環境では通す。 */
+async function isRateLimited(email: string): Promise<boolean> {
+  try {
+    const env = getCloudflareContext().env as unknown as Record<
+      string,
+      Limiter | undefined
+    >;
+    const ip = (await headers()).get("cf-connecting-ip") ?? "unknown";
+    const checks = [
+      env.CONTACT_IP_LIMITER?.limit({ key: `ip:${ip}` }),
+      env.CONTACT_MAIL_LIMITER?.limit({ key: `mail:${email.toLowerCase()}` }),
+    ];
+    const results = await Promise.all(checks);
+    return results.some((r) => r && !r.success);
+  } catch {
+    return false; // Cloudflare 実行環境外（next dev など）
+  }
+}
+
 const field = (formData: FormData, key: string) =>
   String(formData.get(key) ?? "").trim();
 
@@ -82,6 +106,12 @@ export async function sendContact(
   }
   if (!EMAIL_PATTERN.test(email)) {
     return fail("メールアドレスの形式をご確認ください。");
+  }
+
+  if (await isRateLimited(email)) {
+    return fail(
+      "送信が集中しています。しばらく時間をおいて、再度お試しください。",
+    );
   }
 
   const apiKey = getEnv("RESEND_API_KEY");
