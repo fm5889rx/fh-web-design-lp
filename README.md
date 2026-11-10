@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FH WEB DESIGN 公式サイト
 
-## Getting Started
+屋号「FH WEB DESIGN」の公式サイトです（現在は『RePace』開発中の案内ページを公開中）。
+https://fh-web-design.com
 
-First, run the development server:
+## 技術スタック
+
+- Next.js (App Router) / React / TypeScript / Tailwind CSS
+- Cloudflare Workers（[OpenNext](https://opennext.js.org/cloudflare) アダプター）
+- お問い合わせメール: [Resend](https://resend.com)（受信は Cloudflare Email Routing）
+
+## 開発
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
+npm run lint
+npm run preview    # Cloudflare Workers 実行環境でのローカル確認
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+お問い合わせフォームのメール送信を試す場合は、`.env.example` を参考に `.dev.vars`（Git 管理外）へ `RESEND_API_KEY` を設定します。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## デプロイ
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Cloudflare Workers（Workers Builds）で GitHub 連携によるビルド・デプロイを行います。
 
-## Learn More
+- ビルド: `npx opennextjs-cloudflare build`
+- デプロイ: `npx opennextjs-cloudflare deploy`
+- 実行時シークレット: `RESEND_API_KEY`（任意: `CONTACT_TO` / `CONTACT_FROM`）
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+フォームのスパム対策として、`wrangler.jsonc` の Rate Limiting（IP ごと・宛先アドレスごと）とハニーポットを設定しています。

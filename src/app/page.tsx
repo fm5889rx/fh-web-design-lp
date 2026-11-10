@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { ContactForm } from "./_components/ContactForm";
 import { RecordPdfPreview } from "./_components/RecordPdfPreview";
@@ -190,7 +191,13 @@ export default function Home() {
       </main>
 
       <footer className="border-t border-[#A8DAB5]/60 px-6 py-8 text-center text-xs tracking-wider text-[#2F3437]/60">
-        © 2026 FH WEB DESIGN. All rights reserved.
+        <Link
+          href="/privacy"
+          className="underline underline-offset-4 hover:text-[#3E7A52]"
+        >
+          プライバシーポリシー
+        </Link>
+        <p className="mt-3">© 2026 FH WEB DESIGN. All rights reserved.</p>
       </footer>
     </div>
   );
