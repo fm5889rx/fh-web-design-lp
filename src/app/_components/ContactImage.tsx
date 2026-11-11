@@ -6,6 +6,7 @@ import Image from "next/image";
 const IMAGES = {
   tel: { src: "/contact/tel.png", width: 408, height: 73, alt: "電話番号（画像）" },
   mail: { src: "/contact/mail.png", width: 657, height: 73, alt: "メールアドレス（画像）" },
+  address: { src: "/contact/address.png", width: 886, height: 296, alt: "所在地（画像）" },
 } as const;
 
 export function ContactImage({ kind }: { kind: keyof typeof IMAGES }) {
@@ -16,7 +17,13 @@ export function ContactImage({ kind }: { kind: keyof typeof IMAGES }) {
       alt={alt}
       width={width}
       height={height}
-      className="inline-block h-[18px] w-auto align-middle"
+      // 画像は 56px 文字を 1/4（=14px）で表示。住所は 3 行なので幅基準で出す
+      style={kind === "address" ? { width: width / 4 } : { height: 18 }}
+      className={
+        kind === "address"
+          ? "block h-auto max-w-full"
+          : "inline-block w-auto align-middle"
+      }
     />
   );
 }

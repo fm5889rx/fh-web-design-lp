@@ -48,13 +48,7 @@ const COMPANY_INFO: { label: string; value: ReactNode }[] = [
   { label: "代表者", value: "森　太" },
   {
     label: "所在地",
-    value: (
-      <>
-        〒448-0804
-        <br />
-        愛知県刈谷市半城土町北十三塚7-1 ソシア十三塚404
-      </>
-    ),
+    value: <ContactImage kind="address" />,
   },
   {
     label: "電話番号",
