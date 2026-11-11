@@ -63,9 +63,6 @@ export default function PrivacyPage() {
           <p className="mt-2 text-sm leading-loose text-[#2F3437]/80">
             FH WEB DESIGN（代表者：森　太）
             <br />
-            <ContactImage kind="address" />
-            電話：<ContactImage kind="tel" />
-            <br />
             <ContactImage kind="mail" />
           </p>
         </section>
