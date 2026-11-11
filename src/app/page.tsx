@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { ContactImage } from "./_components/ContactImage";
 import { ContactForm } from "./_components/ContactForm";
 import { RecordPdfPreview } from "./_components/RecordPdfPreview";
 import { RecordSheetPreview } from "./_components/RecordSheetPreview";
@@ -58,20 +59,13 @@ const COMPANY_INFO: { label: string; value: ReactNode }[] = [
   {
     label: "電話番号",
     value: (
-      <a href="tel:07089757216" className="underline underline-offset-4">
-        070-8975-7216
-      </a>
+      <ContactImage kind="tel" />
     ),
   },
   {
     label: "メール",
     value: (
-      <a
-        href="mailto:info@fh-web-design.com"
-        className="underline underline-offset-4"
-      >
-        info@fh-web-design.com
-      </a>
+      <ContactImage kind="mail" />
     ),
   },
   {
@@ -241,12 +235,7 @@ export default function Home() {
           </h2>
           <p className="mt-4 mb-8 text-center text-sm leading-loose text-[#2F3437]/75">
             ご相談・ご依頼はこちらから。{" "}
-            <a
-              href="mailto:info@fh-web-design.com"
-              className="font-medium text-[#3E7A52] underline underline-offset-4"
-            >
-              info@fh-web-design.com
-            </a>{" "}
+            メールアドレス <ContactImage kind="mail" />{" "}
             へ直接メールでも承ります。
           </p>
           <ContactForm />
