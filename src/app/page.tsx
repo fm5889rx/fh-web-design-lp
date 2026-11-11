@@ -47,6 +47,10 @@ const COMPANY_INFO: { label: string; value: ReactNode }[] = [
   { label: "屋号", value: "FH WEB DESIGN" },
   { label: "代表者", value: "森　太" },
   {
+    label: "所在地",
+    value: <ContactImage kind="address" />,
+  },
+  {
     label: "メール",
     value: (
       <ContactImage kind="mail" />
