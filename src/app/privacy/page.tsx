@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ContactImage } from "../_components/ContactImage";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -64,14 +65,9 @@ export default function PrivacyPage() {
             <br />
             〒448-0804 愛知県刈谷市半城土町北十三塚7-1 ソシア十三塚404
             <br />
-            電話：070-8975-7216
+            電話：<ContactImage kind="tel" />
             <br />
-            <a
-              href="mailto:info@fh-web-design.com"
-              className="text-[#3E7A52] underline underline-offset-4"
-            >
-              info@fh-web-design.com
-            </a>
+            <ContactImage kind="mail" />
           </p>
         </section>
         <p className="mt-12 text-xs text-[#2F3437]/60">
