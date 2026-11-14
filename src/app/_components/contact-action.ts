@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { HIRAGANA_ERROR, HIRAGANA_PATTERN } from "./contact-validation";
 
 export type ContactState = {
   status: "idle" | "success" | "error";
@@ -106,6 +107,9 @@ export async function sendContact(
   }
   if (!EMAIL_PATTERN.test(email)) {
     return fail("メールアドレスの形式をご確認ください。");
+  }
+  if (!HIRAGANA_PATTERN.test(message)) {
+    return fail(HIRAGANA_ERROR);
   }
 
   if (await isRateLimited(email)) {

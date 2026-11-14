@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { sendContact, type ContactState } from "./contact-action";
+import { HIRAGANA_ERROR, HIRAGANA_PATTERN } from "./contact-validation";
 
 const INITIAL_STATE: ContactState = { status: "idle", message: "" };
 
@@ -14,6 +15,8 @@ export function ContactForm() {
     sendContact,
     INITIAL_STATE,
   );
+
+  const [clientError, setClientError] = useState("");
 
   if (state.status === "success") {
     return (
@@ -27,7 +30,19 @@ export function ContactForm() {
   }
 
   return (
-    <form action={formAction} className="space-y-5 text-left">
+    <form
+      action={formAction}
+      onSubmit={(e) => {
+        // ひらがなを含まない内容は送信前にブロックする（サーバー側でも再チェック）
+        const message = new FormData(e.currentTarget).get("message");
+        if (!HIRAGANA_PATTERN.test(String(message ?? ""))) {
+          e.preventDefault();
+          setClientError(HIRAGANA_ERROR);
+        } else {
+          setClientError("");
+        }
+      }}
+      className="space-y-5 text-left">
       <label className="block text-sm font-medium">
         お名前
         <input
@@ -78,7 +93,7 @@ export function ContactForm() {
         に同意したものとします。
       </p>
       <p aria-live="polite" className="min-h-5 text-sm text-red-700">
-        {state.status === "error" ? state.message : ""}
+        {clientError || (state.status === "error" ? state.message : "")}
       </p>
       <button
         type="submit"
